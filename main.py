@@ -7,7 +7,7 @@ from llama_index.llms.openai import OpenAI
 from llama_index.core import Settings
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import VectorStoreIndex
-from llama_index.core import StorageContext, load_index_from_storage
+from llama_index.core import StorageContext, load_index_from_storage, SimpleDirectoryReader
 from llama_index.vector_stores.faiss import FaissVectorStore
 import os
 
@@ -32,7 +32,12 @@ def main():
     start_of_transcript = [x.text for x in parsed_summary].index("Transcript") + 1
 
     # LlamaIndex provides a document interface that allows us to convert our text into a Document object.
-    documents = [Document(text=t.text) for t in parsed_summary[start_of_transcript:]]
+    pod_cast_transcript = [Document(text=t.text) for t in parsed_summary[start_of_transcript:]]
+
+    # Load from another folder
+    phone_data = SimpleDirectoryReader("./phone_data").load_data()
+
+    documents = pod_cast_transcript + phone_data
 
     index = load_or_build_index(documents)
     
@@ -96,6 +101,21 @@ def with_context(index):
     response_2 = chat_eng.chat(query_2)
     print(response_2.response)
     print("# ---------------------------------------------------------------------------------")
+    query_3 = "What is Mark's mobile phone number?"
+    print(query_3+'\n')
+    response_3 = chat_eng.chat(query_3)
+    print(response_3.response)
+    print("# ---------------------------------------------------------------------------------")
+    query_5 = "What is Mark's home phone number?"
+    print(query_5+'\n')
+    response_5 = chat_eng.chat(query_5)
+    print(response_5.response)
+    print("# ---------------------------------------------------------------------------------")
+    query_7 = "What is Joe's mobile phone number?"
+    print(query_7+'\n')
+    response_7 = chat_eng.chat(query_7)
+    print(response_7.response)
+    print("# ---------------------------------------------------------------------------------")
 
 def no_context(index):
     # ***** QUERY ENGINE (query engine does not keep context)
@@ -108,6 +128,16 @@ def no_context(index):
     print(query_2+'\n')
     response_2 = index.as_query_engine(similarity_top_k=10).query(query_2)
     print(response_2.response)
+    print("# ---------------------------------------------------------------------------------")
+    query_3 = "What is Mark's mobile phone number?"
+    print(query_3+'\n')
+    response_3 = index.as_query_engine(similarity_top_k=1).query(query_3)
+    print(response_3.response)
+    print("# ---------------------------------------------------------------------------------")
+    query_5 = "What is Mark's home phone number?"
+    print(query_5+'\n')
+    response_5 = index.as_query_engine(similarity_top_k=1).query(query_5)
+    print(response_5.response)
     print("# ---------------------------------------------------------------------------------")
 
 if __name__ == "__main__":
