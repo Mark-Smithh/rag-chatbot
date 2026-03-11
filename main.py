@@ -41,6 +41,7 @@ def main():
     with_context(index)
 
 def load_or_build_index(documents):
+    # TO SAVE MONEY IF THE DOCUMENTS AND EMBEDDINGS HAVE ALREADY BEEN PERSISTED TO DISK LOAD THEM
     if os.path.exists(FAISS_PATH) and os.path.exists(STORAGE_DIR):
         print("🔄 Loading existing FAISS index from disk...")
         # 1. Load FAISS binary index
